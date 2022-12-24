@@ -15,6 +15,7 @@ export var JUMP = 1300
 export var FRICTION = 1.2
 export var DASH_FRICTION = 1.04
 export var COLOR = Color("#e03c28")
+export var squashfactor = 0.5
 
 const UP = Vector2(0, -1)
 
@@ -46,6 +47,9 @@ var last_sprite_dir = "R"
 var last_pos = Vector2()
 var curr_anim = ""
 var last_anim = ""
+var bounce = 0
+var justlanded = false
+var oldmotion = Vector2()
 
 var TRAIL_CONT = null
 var VELOCITY = {
@@ -283,6 +287,18 @@ func _physics_process(_delta):
 	move_and_slide((motion+add_motion), UP, false, 4, 0)
 #	position = position.snapped(Vector2(5,5))
 	update()
+	
+	# looks stuff #
+	
+	if is_on_floor() and justlanded == false:
+		justlanded = true
+		bounce("land")
+	if not is_on_floor():
+		justlanded = false
+	bounce = lerp(bounce,0,.3)
+	$Sprite.scale = lerp($Sprite.scale,Vector2(clamp(1-(motion.y+add_motion.y+bounce)/MAX_FALL*squashfactor,0.2,1.8),clamp(1+(motion.y+add_motion.y+bounce)/MAX_FALL*squashfactor,0.2,1.8)),.1)
+	print(bounce)
+	oldmotion = motion+add_motion
 
 func global_to_screen(vec2):
 	var camera_pos = ($Camera.get_camera_screen_center())
@@ -291,3 +307,12 @@ func global_to_screen(vec2):
 		return camera_pos - vec2
 	else:
 		return null
+
+func bounce(type):
+	match type:
+		"land":
+			bounce -= oldmotion.y*50*squashfactor
+		"dash":
+			bounce -= DASH_SPEED*10*squashfactor
+		"jump":
+			bounce -= JUMP*10*squashfactor
