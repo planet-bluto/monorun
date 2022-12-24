@@ -70,7 +70,10 @@ func _ws_data(type, args):
 		"Re":
 			var player = get_player(args[0])
 			var pos = Vector2(int(args[1]), int(args[2]))
-			player.motion = pos
+			player.position = pos
+		"A":
+			var player = get_player(args[0])
+			player.get_node("Anim").play(args[1])
 #			var time_sent = MonoBase.toDec(args[3])
 #			var time_since = (Date.now() - time_sent)
 #			yield(OneShotTimer.start((WsClient.ping - time_since)/1000.0), "timeout")

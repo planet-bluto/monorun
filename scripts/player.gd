@@ -44,6 +44,8 @@ var wall_dir = 0
 var wall_jumpable = false
 var last_sprite_dir = "R"
 var last_pos = Vector2()
+var curr_anim = ""
+var last_anim = ""
 
 var TRAIL_CONT = null
 var VELOCITY = {
@@ -110,9 +112,13 @@ func _got_trail_cont(trail_cont):
 
 func send_pos():
 	if (type == 0):
-		var pos_x = motion.x
-		var pos_y = motion.y
-		WsClient.send("Re:%s,%s,%s" % [str(pos_x), str(pos_y), MonoBase.fromDec(Date.now())])
+		var pos_x = position.x
+		var pos_y = position.y
+		WsClient.send("Re:%s,%s" % [str(pos_x), str(pos_y)])
+
+func send_anim():
+	if (type == 0):
+		WsClient.send("A:%s" % curr_anim)
 
 func _process(_delta):
 #	if (Input.is_action_just_pressed("RESYNC") and type == 0):
@@ -147,6 +153,13 @@ func _physics_process(_delta):
 	if (last_pos != position):
 		send_pos()
 	last_pos = position
+	
+	if (last_anim != curr_anim):
+		if (type == 0):
+			$Anim.play(curr_anim)
+			send_anim()
+	last_anim = curr_anim
+	
 	if (type == 0):
 		var toDIR = {true: "L", false: "R"}
 		var sprite_dir = toDIR[(mouse_screen_pos.x < screen_pos.x)]
@@ -213,22 +226,22 @@ func _physics_process(_delta):
 	#----------------------------------------#
 		if (motion.y < 0):
 			if (motion.y > -400):
-				$Anim.play("jump_peak")
+				curr_anim = "jump_peak"
 			else:
-				$Anim.play("jump")
+				curr_anim = "jump"
 		else:
-			$Anim.play("fall")
+			curr_anim = "fall"
 	
 	if joy_dir != 0:
 		var div = 2.3
 		if (grounded): 
-			$Anim.play("run")
+			curr_anim = "run"
 			div = 1
 		motion.x += (ACCEL*joy_dir)/div
 #		$Sprite.flip_h = (joy_dir == -1)
 	else:
 		if (grounded):
-			$Anim.play("idle")
+			curr_anim = "idle"
 		var curr_fric = FRICTION
 		if (dashing):
 			curr_fric = DASH_FRICTION

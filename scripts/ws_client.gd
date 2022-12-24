@@ -80,7 +80,10 @@ func _parse_msg():
 			print("Ping: %s" % ping)
 
 func send(string) -> int:
-	return client.get_peer(1).put_packet((string).to_utf8())
+	if (connected):
+		return client.get_peer(1).put_packet((string).to_utf8())
+	else:
+		return 24
 
 func send_candidate(id, mid, index, sdp) -> int:
 	return send("C:%s\n%s\n%d\n%s" % [id, mid, index, sdp])
