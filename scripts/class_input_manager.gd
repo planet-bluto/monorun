@@ -20,12 +20,13 @@ var keys = {
 	"L": false,
 	"R": false,
 	"DASH": false,
-	"JUMP": false
+	"JUMP": false,
+	"SHOOT": false,
+	"ALT": false
 }
 
 func _init(t, id):
 	type = t
-	print(id)
 	GlobalInputManager.managers[id] = self
 	#######
 	connect("pressed", self, "_on_pressed")
@@ -81,7 +82,7 @@ func _on_released(key):
 func _on_input(key, state):
 	if (WsClient.connected and type == 0):
 		var sock_string = "i:" + str(key) + str(state) + ",%s" % MonoBase.fromDec(Date.now())
-		WsClient.send(sock_string) 
+#		WsClient.send(sock_string) 
 
 func get_tree():
 	return GlobalVars.tree

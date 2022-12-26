@@ -44,8 +44,8 @@ func _ws_data(type, args):
 			
 			for player_info in args:
 				player_info = Array(player_info.split("|"))
-				GlobalVars.temp_plr_info.append({"id": player_info[1], "x": player_info[2], "y": player_info[3]})
-				WsClient.players.append({"id": player_info[1], "nick": player_info[0]})
+#				GlobalVars.temp_plr_info.append({"id": player_info[1], "x": player_info[2], "y": player_info[3]})
+				WsClient.players.append({"id": player_info[1], "nick": player_info[0], "ping": float(player_info[2])})
 			
 			get_tree().change_scene("res://scenes/test.tscn")
 
@@ -53,15 +53,17 @@ func _host_lobby():
 	WsClient.send("HL:%s's Lobby"%[WsClient.username])
 
 func _join_lobby(title, id):
-	WsClient.send("J:%s" % id)
+	WsClient.send("J:%s,%s" % [id, WsClient.avg_ping])
 
 func _process(_delta):
 	material.set_shader_param("MOOD_COLOR", GlobalVars.mood_color)
 	$Background.color = GlobalVars.mood_color
 	$Crosshair.position = get_global_mouse_position()
 	if (STATE == 0):
-		if (Input.is_action_just_pressed("CONFIRM") and $PlayerInfo/Nickname.text.length() > 0):
+		if (Input.is_action_just_pressed("CONFIRM") and $PlayerInfo/Nickname.text.length() > 0) and !WsClient.pinging:
 			WsClient.username = $PlayerInfo/Nickname.text
-			WsClient.send("I:"+WsClient.username)
+			WsClient.get_avg_ping()
+			yield(WsClient, "got_avg_ping")
+			WsClient.send("I:%s,%s" % [WsClient.username, WsClient.avg_ping])
 			$PlayerInfo.visible = false
 			$LobbyList.visible = true

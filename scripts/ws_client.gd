@@ -12,9 +12,11 @@ var connected = false
 var id = null
 var username = ""
 var lobby_id = null
-var ping = 35
 var pinging = false
-var ping_time = -1
+var last_ping_time = -1
+var ping_times = []
+var ping_accu = 50
+var avg_ping = 0
 
 var players = []
 
@@ -29,6 +31,7 @@ signal candidate_received(id, mid, index, sdp)
 signal lobby_sealed()
 signal new_data(msg)
 signal ws_connect()
+signal got_avg_ping(ping)
 
 func _init():
 	client.connect("data_received", self, "_parse_msg")
@@ -60,6 +63,14 @@ func _connected(protocol = ""):
 	print("Socket Connected!")
 	connected = true
 
+func avg(arr):
+	var total = 0
+	var amount = 0
+	for num in arr:
+		total += num
+		amount += 1
+	return total/amount
+
 func _parse_msg():
 	var pkt_str: String = client.get_peer(1).get_packet().get_string_from_utf8()
 #	emit_signal("new_data", pkt_str)
@@ -75,9 +86,15 @@ func _parse_msg():
 			id = args[0]
 			send("SL")
 		"Pong":
-			pinging = false
-			ping = (Time.get_unix_time_from_system()*1000) - ping_time
-			print("Ping: %s" % ping)
+#			var ping = Date.now() - last_ping_time
+			var ping = 250
+			ping_times.append(ping)
+			if (ping_times.size() == ping_accu):
+				pinging = false
+				avg_ping = ceil(avg(ping_times))
+				print("Avg Ping: %s" % avg_ping)
+				emit_signal("got_avg_ping")
+				ping_times = []
 
 func send(string) -> int:
 	if (connected):
@@ -89,8 +106,13 @@ func send_candidate(id, mid, index, sdp) -> int:
 	return send("C:%s\n%s\n%d\n%s" % [id, mid, index, sdp])
 
 func ping():
-	pinging = true
+	last_ping_time = Date.now()
 	send("Ping:")
+
+func get_avg_ping():
+	pinging = true
+	for i in ping_accu:
+		ping()
 
 func _physics_process(delta):
 	var status: int = client.get_connection_status()
