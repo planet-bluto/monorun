@@ -47,9 +47,6 @@ var last_sprite_dir = "R"
 var last_pos = Vector2()
 var curr_anim = ""
 var last_anim = ""
-var bounce = 0
-var justlanded = false
-var oldmotion = Vector2()
 
 # Weapon #
 
@@ -317,12 +314,3 @@ func global_to_screen(vec2):
 		return camera_pos - vec2
 	else:
 		return null
-
-func bounce(type):
-	match type:
-		"land":
-			bounce -= oldmotion.y*50*squashfactor
-		"dash":
-			bounce -= DASH_SPEED*10*squashfactor
-		"jump":
-			bounce -= JUMP*10*squashfactor
