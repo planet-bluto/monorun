@@ -1,4 +1,5 @@
 extends KinematicBody2D
+class_name Player
 
 signal trail_cont
 
@@ -43,10 +44,31 @@ var trail_amount = 7
 var btn_timer = {}
 var wall_dir = 0
 var wall_jumpable = false
+var sprite_dir = "R"
 var last_sprite_dir = "R"
-var last_pos = Vector2()
 var curr_anim = ""
 var last_anim = ""
+var fastfalling = false
+const synced_vars = [
+	"position",
+	"motion",
+	"curr_anim",
+	"sprite_dir",
+	"fastfalling",
+	"joy_dir",
+	"dash_pending",
+	"jump_pending"
+]
+puppet var player_state = {}
+
+var looped_vars = [
+	"sprite_dir",
+	"curr_anim"
+]
+
+func _init():
+	for key in synced_vars:
+		player_state[key] = self[key]
 
 # Weapon #
 
@@ -60,14 +82,15 @@ var VELOCITY = {
 	"ANGLE": 0
 }
 
-var mouse_screen_pos = get_global_mouse_position()
-var screen_pos = get_transform().get_origin()
+onready var mouse_screen_pos = get_global_mouse_position()
+onready var screen_pos = get_transform().get_origin()
 
 var Inputs
 
 func spawn_trail():
 	if (TRAIL_CONT != null):
 		var sprite = $Sprite.duplicate(8)
+#		sprite.add_to_group("Looping")
 		TRAIL_CONT.add_child(sprite)
 		sprite.position = (position+$Sprite.position)
 		sprite.frame_coords = $Sprite.frame_coords
@@ -83,15 +106,18 @@ func spawn_trail():
 func _ready():
 	print("id: %s" % id)
 	print("type: %s" % type)
+	name = "Player_%s" % id
+	if Network.active: set_network_master(id, true)
 	Inputs = InputManager.new(type, id)
-	Inputs.connect("pressed", self, "_input_press")
-	Inputs.connect("released", self, "_input_release")
+	if (type == 0):
+		Inputs.connect("pressed", self, "_input_press")
+		Inputs.connect("released", self, "_input_release")
 	
 	if (type == 0):
 		$Camera.current = true
 		GlobalVars.current_camera = $Camera
 	material = material.duplicate(8)
-	connect("trail_cont", self, "_got_trail_cont")
+	var _1 = connect("trail_cont", self, "_got_trail_cont")
 	if (!OS.is_debug_build()):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 #		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
@@ -121,16 +147,6 @@ func _input_release(key):
 func _got_trail_cont(trail_cont):
 	TRAIL_CONT = trail_cont
 
-func send_pos():
-	if (type == 0):
-		var pos_x = position.x
-		var pos_y = position.y
-		WsClient.send("P:%s,%s,%s" % [str(pos_x), str(pos_y), Date.nowMono()])
-
-func send_anim():
-	if (type == 0):
-		WsClient.send("A:%s,%s" % [curr_anim, Date.nowMono()])
-
 func _process(_delta):
 #	if (Input.is_action_just_pressed("RESYNC") and type == 0):
 #		var pos_x = round(position.x)
@@ -152,34 +168,40 @@ func _process(_delta):
 	
 	#----------------------------------------#
 	
-	if  (VELOCITY.SPEED > 1000):
-		spawn_trail()
 	
 	#----------------------------------------#
 	
 	material.set_shader_param("PLAYER_COLOR", COLOR)
 	material.set_shader_param("MOOD_COLOR", GlobalVars.mood_color)
 
+func _send_vars():
+	if (Network.active):
+		for key in synced_vars:
+			player_state[key] = self[key]
+	#	print(player_state)
+		rset_unreliable("player_state", player_state)
+
+func _set_vars():
+	if (Network.active):
+		for key in synced_vars:
+			self[key] = player_state[key]
+
 func _physics_process(_delta): 
-	if (last_pos != position):
-		send_pos()
-	last_pos = position
-	
 	if (last_anim != curr_anim):
-		if (type == 0):
-			$Anim.play(curr_anim)
-			send_anim()
+		$Anim.play(curr_anim)
 	last_anim = curr_anim
 	
-	if (type == 0):
-		var toDIR = {true: "L", false: "R"}
-		var sprite_dir = toDIR[(mouse_screen_pos.x < screen_pos.x)]
-		if (sprite_dir != last_sprite_dir):
-			WsClient.send("F:%s,%s" % [sprite_dir, MonoBase.fromDec(Date.now())])
-			last_sprite_dir = sprite_dir
+	var toDIR = {true: "L", false: "R"}
+	if (type == 0): sprite_dir = toDIR[(mouse_screen_pos.x < screen_pos.x)]
+	if (sprite_dir != last_sprite_dir):
+		last_sprite_dir = sprite_dir
 #			yield(OneShotTimer.start(0.001*WsClient.ping), "timeout")
-			$Sprite.flip_h = (mouse_screen_pos.x < screen_pos.x)
-		
+		$Sprite.flip_h = (sprite_dir == "L")
+	
+	if (type == 0):
+		fastfalling = Inputs.is_down("D")
+	
+	if (type != 2):
 		VELOCITY.SPEED = sqrt(pow(motion.x, 2)+pow(motion.y, 2))
 		VELOCITY.ANGLE = atan2(motion.y, motion.x)
 		grounded = (is_on_floor())
@@ -231,7 +253,7 @@ func _physics_process(_delta):
 				motion.y = MAX_FALL
 			else:
 				var curr_ff = 0
-				if (Inputs.is_down("D")):
+				if (fastfalling):
 					curr_ff = FAST_FALL
 				motion.y += (WEIGHT+curr_ff)
 		#----------------------------------------#
@@ -291,21 +313,16 @@ func _physics_process(_delta):
 		else:
 			motion.x = clamp(motion.x, -SPEED, SPEED)
 		
-		move_and_slide((motion+add_motion), UP, false, 4, 0)
+		var _slide = move_and_slide_with_snap((motion+add_motion), Vector2(0, 1), UP, false, 4, 0)
 	#	position = position.snapped(Vector2(5,5))
+		if  (VELOCITY.SPEED > 1000):
+			spawn_trail()
 		update()
 	
-#	# looks stuff #
-#
-#	if is_on_floor() and justlanded == false:
-#		justlanded = true
-#		bounce("land")
-#	if not is_on_floor():
-#		justlanded = false
-#	bounce = lerp(bounce,0,0.5)
-#	$Sprite.scale = lerp($Sprite.scale,Vector2(clamp(1-(motion.y+add_motion.y+bounce)/MAX_FALL*squashfactor,0.2,1.8),clamp(1+(motion.y+add_motion.y+bounce)/MAX_FALL*squashfactor,0.2,1.8)),.1)
-##	print(bounce)
-#	oldmotion = motion+add_motion
+	if (type == 0):
+		_send_vars()
+	elif (type == 1): 
+		_set_vars()
 
 func global_to_screen(vec2):
 	var camera_pos = ($Camera.get_camera_screen_center())

@@ -23,5 +23,12 @@ func _ready():
 	print(rand)
 	mood_color = Color(MOODS[rand])
 
-func _process(delta):
+func _process(_delta):
 	pass
+
+func properties(obj):
+	var return_arr = []
+	for prop in obj.get_property_list():
+		return_arr.append(prop.name)
+	
+	return return_arr

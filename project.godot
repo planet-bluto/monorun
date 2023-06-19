@@ -9,13 +9,31 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Sprite",
+"class": "Crosshair",
+"language": "GDScript",
+"path": "res://scripts/crosshair.gd"
+}, {
 "base": "Node",
 "class": "InputManager",
 "language": "GDScript",
 "path": "res://scripts/class_input_manager.gd"
+}, {
+"base": "Node",
+"class": "Looper",
+"language": "GDScript",
+"path": "res://scripts/looper.gd"
+}, {
+"base": "KinematicBody2D",
+"class": "Player",
+"language": "GDScript",
+"path": "res://scripts/player.gd"
 } ]
 _global_script_class_icons={
-"InputManager": ""
+"Crosshair": "",
+"InputManager": "",
+"Looper": "",
+"Player": ""
 }
 
 [application]
@@ -29,10 +47,10 @@ config/icon="res://icon.png"
 GlobalVars="*res://scripts/global_vars.gd"
 OneShotTimer="*res://scripts/OneShotTimer.gd"
 Date="*res://scripts/Date.gd"
-WsClient="*res://scripts/ws_client.gd"
-MultiClient="*res://scripts/multiplayer.gd"
+Network="*res://scripts/network.gd"
 MonoBase="*res://scripts/monoBase.gd"
 GlobalInputManager="*res://scripts/GlobalInputManager.gd"
+GameRoom="*res://scripts/gameroom.gd"
 
 [display]
 

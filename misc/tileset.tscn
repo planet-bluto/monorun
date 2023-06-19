@@ -1,0 +1,199 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://sprites/tileset.png" type="Texture" id=1]
+[ext_resource path="res://objects/platform.tscn" type="PackedScene" id=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 40, 40 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Tile #1" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #1"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #1/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #2" type="Sprite" parent="."]
+position = Vector2( 85, 0 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 1
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #2"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #2/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #3" type="Sprite" parent="."]
+position = Vector2( 170, 0 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 2
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #3"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #3/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #4" type="Sprite" parent="."]
+position = Vector2( 0, 85 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 5
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #4"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #4/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #5" type="Sprite" parent="."]
+position = Vector2( 85, 85 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 6
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #5"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #5/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #6" type="Sprite" parent="."]
+position = Vector2( 170, 85 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 7
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #6"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #6/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #7" type="Sprite" parent="."]
+position = Vector2( 0, 170 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 10
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #7"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #7/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #8" type="Sprite" parent="."]
+position = Vector2( 85, 170 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 11
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #8"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #8/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #9" type="Sprite" parent="."]
+position = Vector2( 170, 170 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 12
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #9"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #9/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #10" type="Sprite" parent="."]
+position = Vector2( 255, 0 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 3
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #10"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #10/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #11" type="Sprite" parent="."]
+position = Vector2( 340, 0 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 4
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #11"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #11/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #12" type="Sprite" parent="."]
+position = Vector2( 255, 85 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 8
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #12"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #12/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #13" type="Sprite" parent="."]
+position = Vector2( 340, 85 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 9
+
+[node name="StaticBody" type="StaticBody2D" parent="Tile #13"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tile #13/StaticBody"]
+position = Vector2( 40, 40 )
+shape = SubResource( 1 )
+
+[node name="Tile #14" type="Sprite" parent="."]
+position = Vector2( 255, 170 )
+texture = ExtResource( 1 )
+centered = false
+hframes = 5
+vframes = 3
+frame = 13
+
+[node name="StaticBody" parent="Tile #14" instance=ExtResource( 2 )]
