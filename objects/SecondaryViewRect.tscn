@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="ViewportTexture" id=2]
+viewport_path = NodePath("VP")
+
+[node name="TextureRect3" type="TextureRect"]
+margin_right = 5120.0
+margin_bottom = 1280.0
+texture = SubResource( 2 )
+expand = true
+stretch_mode = 4

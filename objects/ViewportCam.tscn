@@ -1,0 +1,7 @@
+[gd_scene format=2]
+
+[node name="Cam" type="Camera2D"]
+position = Vector2( -800, 0 )
+anchor_mode = 0
+rotating = true
+process_mode = 0

@@ -15,11 +15,11 @@ func _ready():
 func _join_lobby():
 	Network.join($LobbyList/Query.text)
 	yield(Network, "client_joined")
-	get_tree().change_scene("res://scenes/test.tscn")
+	get_tree().change_scene("res://scenes/lobby.tscn")
 
 func _host_lobby():
 	Network.host()
-	get_tree().change_scene("res://scenes/test.tscn")
+	get_tree().change_scene("res://scenes/lobby.tscn")
 
 func _process(_delta):
 	material.set_shader_param("MOOD_COLOR", GlobalVars.mood_color)

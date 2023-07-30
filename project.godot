@@ -9,37 +9,19 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Sprite",
-"class": "Crosshair",
-"language": "GDScript",
-"path": "res://scripts/crosshair.gd"
-}, {
 "base": "Node",
 "class": "InputManager",
 "language": "GDScript",
 "path": "res://scripts/class_input_manager.gd"
-}, {
-"base": "Node",
-"class": "Looper",
-"language": "GDScript",
-"path": "res://scripts/looper.gd"
-}, {
-"base": "KinematicBody2D",
-"class": "Player",
-"language": "GDScript",
-"path": "res://scripts/player.gd"
 } ]
 _global_script_class_icons={
-"Crosshair": "",
-"InputManager": "",
-"Looper": "",
-"Player": ""
+"InputManager": ""
 }
 
 [application]
 
 config/name="Monorun"
-run/main_scene="res://scenes/multiplayer.tscn"
+run/main_scene="res://scenes/title.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -47,10 +29,11 @@ config/icon="res://icon.png"
 GlobalVars="*res://scripts/global_vars.gd"
 OneShotTimer="*res://scripts/OneShotTimer.gd"
 Date="*res://scripts/Date.gd"
-Network="*res://scripts/network.gd"
+WsClient="*res://scripts/ws_client.gd"
+MultiClient="*res://scripts/multiplayer.gd"
 MonoBase="*res://scripts/monoBase.gd"
 GlobalInputManager="*res://scripts/GlobalInputManager.gd"
-GameRoom="*res://scripts/gameroom.gd"
+Network="*res://scripts/network.gd"
 
 [display]
 
@@ -85,6 +68,18 @@ texture={
 "size_limit": 0,
 "stream": false,
 "svg/scale": 1.0
+}
+wav={
+"compress/mode": 0,
+"edit/loop_begin": 0,
+"edit/loop_end": -1,
+"edit/loop_mode": 2,
+"edit/normalize": true,
+"edit/trim": false,
+"force/8_bit": false,
+"force/max_rate": false,
+"force/max_rate_hz": 44100,
+"force/mono": false
 }
 
 [input]
@@ -203,6 +198,11 @@ RESYNC={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":82,"unicode":0,"echo":false,"script":null)
  ]
 }
+TOGGLE_MOUSE={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777218,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+ ]
+}
 
 [physics]
 
@@ -214,5 +214,5 @@ common/physics_interpolation=true
 
 quality/driver/driver_name="GLES2"
 2d/snapping/use_gpu_pixel_snap=true
-environment/default_clear_color=Color( 0, 0, 0, 1 )
+environment/default_clear_color=Color( 0, 1, 0, 1 )
 environment/default_environment="res://default_env.tres"

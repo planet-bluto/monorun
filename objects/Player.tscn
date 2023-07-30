@@ -142,12 +142,31 @@ anims/run = SubResource( 4 )
 position = Vector2( 0, -17.5 )
 shape = SubResource( 8 )
 
-[node name="Camera" type="Camera2D" parent="."]
-physics_interpolation_mode = 1
-position = Vector2( 1, 0 )
-zoom = Vector2( 5, 5 )
-limit_top = -1280
-limit_bottom = 0
-smoothing_speed = 10.0
-
 [node name="Trail" type="Node2D" parent="."]
+
+[node name="HP" type="Control" parent="."]
+visible = false
+margin_left = -45.0
+margin_top = 15.0
+margin_right = -5.0
+margin_bottom = 55.0
+
+[node name="Border" type="ColorRect" parent="HP"]
+margin_left = -5.0
+margin_top = -5.0
+margin_right = 95.0
+margin_bottom = 20.0
+
+[node name="Back" type="ColorRect" parent="HP"]
+margin_right = 90.0
+margin_bottom = 15.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="Bar" type="ColorRect" parent="HP"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 85.0
+margin_bottom = 10.0
+color = Color( 0.878431, 0.235294, 0.156863, 1 )
+
+[node name="Remote" type="RemoteTransform2D" parent="."]

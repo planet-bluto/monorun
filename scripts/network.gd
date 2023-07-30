@@ -6,7 +6,7 @@ signal peer_join(id)
 signal peer_leave(id)
 signal server_close
 
-const DEFAULT_PORT = 4887
+const DEFAULT_PORT = 6666
 const MAX_PEERS = 16
 
 var peer = null

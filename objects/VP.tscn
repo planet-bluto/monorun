@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://objects/ViewportCam.tscn" type="PackedScene" id=1]
+
+[node name="VP" type="Viewport"]
+size = Vector2( 1840, 1280 )
+transparent_bg = true
+usage = 0
+render_target_v_flip = true
+
+[node name="Cam" type="Camera2D" parent="." instance=ExtResource( 1 )]
+position = Vector2( -800, 0 )
+anchor_mode = 0
+rotating = true
+process_mode = 0
+
+[node name="SPAWNPOINTS" type="Node2D" parent="."]
+
+[node name="Spawn" type="Position2D" parent="SPAWNPOINTS"]
+position = Vector2( 400, 640 )
+__meta__ = {
+"_gizmo_extents_": 86.5
+}
+
+[node name="Spawn2" type="Position2D" parent="SPAWNPOINTS"]
+position = Vector2( 1435, 640 )
+__meta__ = {
+"_gizmo_extents_": 86.5
+}
+
+[node name="PLAYER_CONTS" type="Node2D" parent="."]
+
+[node name="PROJECTILES" type="Node2D" parent="."]
+
+[node name="PLATFORMS" type="Node2D" parent="."]
+
+[node name="PLAYERS" type="Node2D" parent="."]
+
+[node name="EXPLOSIONS" type="Node2D" parent="."]

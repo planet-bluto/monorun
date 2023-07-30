@@ -1,0 +1,7 @@
+[gd_scene format=2]
+
+[node name="PlayerCam" type="Camera2D"]
+zoom = Vector2( 5, 5 )
+process_mode = 0
+limit_top = 0
+limit_bottom = 1280
