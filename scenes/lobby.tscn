@@ -1,11 +1,11 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://sprites/lobby_weapon_0.png" type="Texture" id=1]
 [ext_resource path="res://misc/template_tileset.tres" type="TileSet" id=2]
 [ext_resource path="res://sprites/lobby_panel.png" type="Texture" id=3]
 [ext_resource path="res://scripts/scene_lobby.gd" type="Script" id=4]
 [ext_resource path="res://misc/tile_shader.tres" type="Shader" id=5]
-[ext_resource path="res://sprites/crosshair.png" type="Texture" id=6]
+[ext_resource path="res://objects/Crosshair.tscn" type="PackedScene" id=6]
 [ext_resource path="res://misc/Shortstack .ttf" type="DynamicFontData" id=7]
 [ext_resource path="res://objects/IngameWorker.tscn" type="PackedScene" id=8]
 [ext_resource path="res://sprites/lobby_mod_0.png" type="Texture" id=9]
@@ -20,6 +20,7 @@
 [ext_resource path="res://music/server_lobby_playtest.wav" type="AudioStream" id=18]
 [ext_resource path="res://music/server_lobby_panel.wav" type="AudioStream" id=19]
 [ext_resource path="res://objects/VP.tscn" type="PackedScene" id=20]
+[ext_resource path="res://sprites/lobby_weapon_1.png" type="Texture" id=21]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 5 )
@@ -40,12 +41,12 @@ region_rect = Rect2( 0, 0, 60, 60 )
 texture = ExtResource( 13 )
 region_rect = Rect2( 0, 0, 60, 60 )
 
-[sub_resource type="ShaderMaterial" id=5]
+[sub_resource type="ShaderMaterial" id=6]
 shader = ExtResource( 15 )
 shader_param/PLAYER_COLOR = null
 shader_param/MOOD_COLOR = null
 
-[sub_resource type="ShaderMaterial" id=6]
+[sub_resource type="ShaderMaterial" id=5]
 shader = ExtResource( 15 )
 shader_param/PLAYER_COLOR = null
 shader_param/MOOD_COLOR = null
@@ -57,6 +58,7 @@ script = ExtResource( 4 )
 [node name="IngameWorker" parent="." instance=ExtResource( 8 )]
 loopWidth = 1840
 player_lives = -1
+death_messages_cont_path = NodePath("../FRONTHUD/Panel/Deaths")
 
 [node name="BACKHUD" type="Node2D" parent="." groups=["HUD"]]
 position = Vector2( 720, 720 )
@@ -84,6 +86,7 @@ bus = "Music"
 use_parent_material = true
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 80, 80 )
+collision_layer = 29
 format = 1
 tile_data = PoolIntArray( 196608, 11, 0, 196609, 11, 0, 196610, 11, 0, 196611, 11, 0, 196612, 11, 0, 196613, 11, 0, 196614, 11, 0, 196615, 11, 0, 196616, 11, 0, 196617, 11, 0, 196618, 11, 0, 196619, 11, 0, 196620, 11, 0, 196621, 11, 0, 196622, 11, 0, 196623, 11, 0, 196624, 11, 0, 196625, 11, 0, 196626, 11, 0, 196627, 11, 0, 196628, 11, 0, 196629, 11, 0, 196630, 11, 0, 524291, 13, 0, 524292, 13, 0, 524293, 13, 0, 524294, 13, 0, 524304, 13, 0, 524305, 13, 0, 524306, 13, 0, 524307, 13, 0, 720896, 1, 0, 720897, 1, 0, 720898, 1, 0, 720899, 1, 0, 720900, 1, 0, 720901, 1, 0, 720902, 1, 0, 720903, 1, 0, 720904, 1, 0, 720905, 1, 0, 720906, 1, 0, 720907, 1, 0, 720908, 1, 0, 720909, 1, 0, 720910, 1, 0, 720911, 1, 0, 720912, 1, 0, 720913, 1, 0, 720914, 1, 0, 720915, 1, 0, 720916, 1, 0, 720917, 1, 0, 720918, 1, 0 )
 
@@ -132,6 +135,12 @@ align = 1
 [node name="Panel" type="Node2D" parent="FRONTHUD"]
 use_parent_material = true
 
+[node name="Deaths" type="VBoxContainer" parent="FRONTHUD/Panel"]
+margin_left = -470.0
+margin_top = -630.0
+margin_right = -430.0
+margin_bottom = -590.0
+
 [node name="Back" type="Sprite" parent="FRONTHUD/Panel"]
 use_parent_material = true
 position = Vector2( -720, -720 )
@@ -139,10 +148,10 @@ texture = ExtResource( 3 )
 centered = false
 
 [node name="PanelArrow" type="Button" parent="FRONTHUD/Panel"]
-margin_left = -425.0
-margin_top = -725.0
-margin_right = -360.0
-margin_bottom = -639.0
+margin_left = -410.0
+margin_top = -705.0
+margin_right = -345.0
+margin_bottom = -619.0
 rect_scale = Vector2( -1, 1 )
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
@@ -167,9 +176,10 @@ margin_top = -520.0
 margin_right = -655.0
 margin_bottom = -480.0
 
-[node name="ColorOption" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_0" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_right = 60.0
 margin_bottom = 60.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -179,10 +189,11 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption2" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_1" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 65.0
 margin_right = 125.0
 margin_bottom = 60.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -192,10 +203,11 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption3" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_2" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 130.0
 margin_right = 190.0
 margin_bottom = 60.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -205,10 +217,11 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption4" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_3" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_top = 65.0
 margin_right = 60.0
 margin_bottom = 125.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -218,11 +231,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption5" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_4" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 65.0
 margin_top = 65.0
 margin_right = 125.0
 margin_bottom = 125.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -232,11 +246,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption6" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_5" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 130.0
 margin_top = 65.0
 margin_right = 190.0
 margin_bottom = 125.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -246,10 +261,11 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption7" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_6" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_top = 130.0
 margin_right = 60.0
 margin_bottom = 190.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -259,11 +275,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption8" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_7" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 65.0
 margin_top = 130.0
 margin_right = 125.0
 margin_bottom = 190.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -273,11 +290,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption9" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_8" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 130.0
 margin_top = 130.0
 margin_right = 190.0
 margin_bottom = 190.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -287,10 +305,11 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption10" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_9" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_top = 195.0
 margin_right = 60.0
 margin_bottom = 255.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -300,11 +319,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption11" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_10" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 65.0
 margin_top = 195.0
 margin_right = 125.0
 margin_bottom = 255.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -314,11 +334,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption12" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_11" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 130.0
 margin_top = 195.0
 margin_right = 190.0
 margin_bottom = 255.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -328,11 +349,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption13" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_12" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 30.0
 margin_top = 260.0
 margin_right = 90.0
 margin_bottom = 320.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -342,11 +364,12 @@ custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
 
-[node name="ColorOption14" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
+[node name="Color_13" type="Button" parent="FRONTHUD/Panel/ColorSelect"]
 margin_left = 100.0
 margin_top = 260.0
 margin_right = 160.0
 margin_bottom = 320.0
+focus_mode = 0
 theme = ExtResource( 14 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
@@ -355,17 +378,6 @@ custom_styles/pressed = SubResource( 3 )
 custom_styles/focus = SubResource( 3 )
 custom_styles/disabled = SubResource( 4 )
 custom_styles/normal = SubResource( 3 )
-
-[node name="WeaponSelect" type="Button" parent="FRONTHUD/Panel"]
-material = SubResource( 5 )
-margin_left = -695.0
-margin_top = -170.0
-margin_right = -605.0
-margin_bottom = -80.0
-theme = ExtResource( 14 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = ExtResource( 12 )
-icon = ExtResource( 1 )
 
 [node name="ModSelect" type="Button" parent="FRONTHUD/Panel"]
 material = SubResource( 6 )
@@ -378,5 +390,31 @@ custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 12 )
 icon = ExtResource( 9 )
 
-[node name="Crosshair" type="Sprite" parent="."]
-texture = ExtResource( 6 )
+[node name="WeaponSelect" type="HBoxContainer" parent="FRONTHUD/Panel"]
+material = SubResource( 5 )
+margin_left = -700.0
+margin_top = -170.0
+margin_right = -610.0
+margin_bottom = -80.0
+custom_constants/separation = -5
+
+[node name="Bomb" type="Button" parent="FRONTHUD/Panel/WeaponSelect"]
+use_parent_material = true
+margin_right = 90.0
+margin_bottom = 90.0
+theme = ExtResource( 14 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 12 )
+icon = ExtResource( 1 )
+
+[node name="Saw" type="Button" parent="FRONTHUD/Panel/WeaponSelect"]
+use_parent_material = true
+margin_left = 85.0
+margin_right = 175.0
+margin_bottom = 90.0
+theme = ExtResource( 14 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 12 )
+icon = ExtResource( 21 )
+
+[node name="Crosshair" parent="." instance=ExtResource( 6 )]

@@ -10,11 +10,17 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "DashSecondary",
+"language": "GDScript",
+"path": "res://scripts/s_dash.gd"
+}, {
+"base": "Node",
 "class": "InputManager",
 "language": "GDScript",
 "path": "res://scripts/class_input_manager.gd"
 } ]
 _global_script_class_icons={
+"DashSecondary": "",
 "InputManager": ""
 }
 
@@ -27,13 +33,13 @@ config/icon="res://icon.png"
 [autoload]
 
 GlobalVars="*res://scripts/global_vars.gd"
+Network="*res://scripts/network.gd"
 OneShotTimer="*res://scripts/OneShotTimer.gd"
 Date="*res://scripts/Date.gd"
-WsClient="*res://scripts/ws_client.gd"
-MultiClient="*res://scripts/multiplayer.gd"
+WsClient="res://scripts/ws_client.gd"
+MultiClient="res://scripts/multiplayer.gd"
 MonoBase="*res://scripts/monoBase.gd"
 GlobalInputManager="*res://scripts/GlobalInputManager.gd"
-Network="*res://scripts/network.gd"
 
 [display]
 
@@ -45,6 +51,10 @@ window/size/test_height=432
 mouse_cursor/custom_image="res://sprites/invis.png"
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
+
+[gdnative]
+
+singletons=[ "res://webrtc/webrtc.tres" ]
 
 [importer_defaults]
 
@@ -181,11 +191,13 @@ DASH={
 SHOOT={
 "deadzone": 0.5,
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":80,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 ALT={
 "deadzone": 0.5,
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"pressed":false,"doubleclick":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":79,"unicode":0,"echo":false,"script":null)
  ]
 }
 CONFIRM={
@@ -200,7 +212,7 @@ RESYNC={
 }
 TOGGLE_MOUSE={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777218,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777246,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 
@@ -212,7 +224,6 @@ common/physics_interpolation=true
 
 [rendering]
 
-quality/driver/driver_name="GLES2"
 2d/snapping/use_gpu_pixel_snap=true
-environment/default_clear_color=Color( 0, 1, 0, 1 )
+environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"

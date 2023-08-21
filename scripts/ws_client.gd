@@ -10,11 +10,11 @@ var connected = false
 
 
 var id = null
+var inited = false
 var username = ""
 var lobby_genocided = false
 var in_lobby = false
 var lobby_id = null
-var lobby_title = null
 var lobby_ingame = false
 var pinging = false
 var last_ping_time = - 1
@@ -35,7 +35,7 @@ signal offer_received(id, offer)
 signal answer_received(id, answer)
 signal candidate_received(id, mid, index, sdp)
 signal lobby_sealed()
-signal new_data(msg)
+signal ws_message(type, message)
 signal ws_connect()
 signal got_avg_ping(ping)
 
@@ -56,6 +56,7 @@ func close():
 	client.disconnect_from_host()
 
 func _closed(was_clean = false):
+	print("Socket Closed: %s" % was_clean)
 	emit_signal("disconnected")
 	connected = false
 
@@ -78,59 +79,35 @@ func avg(arr):
 	return total / amount
 
 func _parse_msg():
-	var pkt_str:String = client.get_peer(1).get_packet().get_string_from_utf8()
+	var data: String = client.get_peer(1).get_packet().get_string_from_utf8()
+	var databits = data.split(":")
+	var type = databits[0]
+	databits.remove(0)
+	var message = parse_json(databits.join(":"))
+#	print(message)
+	
+	match type:
+		"init":
+			inited = true
+			Network.ws_id = message.id
 
-	var index = pkt_str.split(":")
-	var index_type = index[0]
-	index.remove(0)
-	var args = []
-	if (index.size() > 0):
-		args = Array(index[0].split(","))
-	emit_signal("new_data", index_type, args)
-	match index_type:
-		"I":
-			id = args[0]
-		"Pong":
+	emit_signal("ws_message", type, message)
 
-			var this_ping = 250
-			ping_times.append(this_ping)
-			if (ping_times.size() == ping_accu):
-				pinging = false
-				avg_ping = ceil(avg(ping_times))
-				print("Avg Ping: %s" % avg_ping)
-				emit_signal("got_avg_ping")
-				ping_times = []
-		"genocide":
-			print("LOBBY GENOCIDE")
-			lobby_genocided = true
-			in_lobby = false
-			get_tree().change_scene("res://scenes/multiplayer.tscn")
-
-func send(string)->int:
+func basesend(string)->int:
 	if (connected):
 		return client.get_peer(1).put_packet((string).to_utf8())
 	else :
 		return 24
 
-func insend(index, args):
-	args.append(Date.nowMono())
-	var new_args = PoolStringArray()
-	for arg in args:
-		new_args.append(str(arg))
-	var send_string = "in%s:%s" % [index, new_args.join(",")]
-	return send(send_string)
-
-func normsend(index, args, date = false):
-	if (date):args.append(Date.nowMono())
-	var new_args = PoolStringArray()
-	for arg in args:
-		new_args.append(str(arg))
-	var send_string = "%s:%s" % [index, new_args.join(",")]
-	return send(send_string)
+func send(type: String, obj: Dictionary = {}):
+	var send_string = to_json(obj)
+	var send_data = (type+":"+send_string)
+#	print(send_data)
+	return basesend(send_data)
 
 func ping():
 	last_ping_time = Date.now()
-	send("Ping:")
+	basesend("ping")
 
 func get_avg_ping():
 	pinging = true
@@ -139,8 +116,5 @@ func get_avg_ping():
 
 func _physics_process(delta):
 	var status:int = client.get_connection_status()
-
-
-
 	if status == WebSocketClient.CONNECTION_CONNECTING or status == WebSocketClient.CONNECTION_CONNECTED:
 		client.poll()

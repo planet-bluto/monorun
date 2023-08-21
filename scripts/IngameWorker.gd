@@ -1,9 +1,13 @@
 extends Node
 
+signal new_player
+
 export var loopWidth = 64 * 80
 export var player_lives = 2
 export var player_HP = 120
 export var over_extend = 800
+
+export var death_messages_cont_path: NodePath
 
 onready var root = get_parent()
 onready var parent = root.get_node("VP")
@@ -13,11 +17,13 @@ var player_cam = preload("res://objects/PlayerCam.tscn")
 var platform_obj = preload("res://objects/Platform.tscn")
 var main_view_obj = preload("res://objects/MainViewRect.tscn")
 var secondary_view_obj = preload("res://objects/SecondaryViewRect.tscn")
+var death_message_preload = preload("res://objects/DeathMessage.tscn")
 var client_player = null
 
 var cam
 
 func base_player_init(player_node, type, id, l_id = 0):
+	print("Adding Player Node (%s)" % id)
 	player_node.type = type
 	player_node.id = id
 #	player_node.l_id = l_id
@@ -26,15 +32,16 @@ func base_player_init(player_node, type, id, l_id = 0):
 	player_node.HP = player_node.MAX_HP
 	player_node.MAX_LIVES = player_lives
 	player_node.lives = player_node.MAX_LIVES
-	if (type != 1 or not GlobalVars.temp_plr_info.has(id)):
-		player_node.position = get_random_spawn_point()
-	else :
-		var temp_info = GlobalVars.temp_plr_info[id]
-		player_node.position = temp_info.pos
-		player_node.get_node("Anim").play(temp_info.anim)
-		player_node.COLOR = GlobalVars.COLORS[temp_info.color]
-		player_node.HP = temp_info.HP
+#	if (type != 1 or not GlobalVars.temp_plr_info.has(id)):
+#		player_node.position = get_random_spawn_point()
+#	else :
+#		var temp_info = GlobalVars.temp_plr_info[id]
+#		player_node.position = temp_info.pos
+#		player_node.get_node("Anim").play(temp_info.anim)
+#		player_node.COLOR = GlobalVars.COLORS[temp_info.color]
+#		player_node.HP = temp_info.HP
 	GlobalVars.try_add_child("VP/PLAYERS", player_node)
+	player_node.position = get_random_spawn_point()
 #	var doops = _loop_init(player_node)
 #	if (type != 0):
 #		for doop in doops:
@@ -46,6 +53,7 @@ func base_player_init(player_node, type, id, l_id = 0):
 	player_node.get_node("HP").visible = true
 	player_node.connect("projectile", self, "_new_projectile")
 	player_node.connect("died", self, "_player_death")
+	emit_signal("new_player", player_node)
 
 func _ready():
 #	WsClient.normsend("IL", [player_HP, player_lives, false])
@@ -97,22 +105,34 @@ func _ready():
 #	WsClient.connect("new_data", self, "_ws_data")
 	var _1 = Network.connect("peer_join", self, "init_net_player")
 	var _2 = Network.connect("server_close", get_tree(), "change_scene", ["res://scenes/multiplayer.tscn"])
-	var _3 = Network.connect("peer_leave", self, "player_leave")
+	var _3 = Network.connect("peer_leave", self, "_player_leave")
 	
 	client_player = player_obj.instance()
 	if Network.active: Network.id = get_tree().get_network_unique_id()
-	base_player_init(client_player, 0, Network.id)
+	base_player_init(client_player, 0, (Network.id if Network.active else 0))
+	client_player.username = Network.username
 	
 	cam = player_cam.instance()
 	root.add_child(cam)
 	client_player.get_node("Remote").remote_path = cam.get_path()
 	cam.current = true
+	
+	client_player.get_node("Listener").current = true
 #	client_player.id = Network.id
 	
 #	var other_l_id = 1
 #	for player in WsClient.players:
 #		init_net_player(player.id, player.ping, other_l_id)
 #		other_l_id += 1
+	if (Network.active):
+		var this_ind = 0
+		for this_id in Network.lobby.clients.keys():
+			this_id = int(this_id)
+			var username = Network.lobby.clients[str(this_id)].username
+			if (this_ind == 0): this_id = 1
+			if (this_id != Network.id):
+				init_net_player(int(this_id), username)
+			this_ind += 1
 
 func get_spawn_points():
 	var spawn_points = []
@@ -135,11 +155,26 @@ func _new_projectile(proj):
 #	_loop_append(proj, doops)
 
 func _player_death(player, respawn):
+	if (player.last_attack_info != null and death_messages_cont_path != null):
+		var death_messages_cont = get_node(death_messages_cont_path)
+		var new_death_message = death_message_preload.instance()
+		
+		var attacker_name = ""
+		var attacker_color = Color.black
+		var weapon_id = -1
+		if (not player.last_attack_info.sd):
+			attacker_name = player.last_attack_info.attacker_username
+			attacker_color = player.last_attack_info.attacker_color
+			weapon_id = player.last_attack_info.weapon_id
+		new_death_message.init(attacker_name, Color(attacker_color), player.username, player.COLOR, weapon_id)
+		
+		death_messages_cont.add_child(new_death_message)
+		death_messages_cont.move_child(new_death_message, 0)
 	if (respawn):
 		yield (get_tree().create_timer(3.0), "timeout")
 		if (player.type == 0):
 			player.position = get_random_spawn_point()
-		yield (get_tree().create_timer((WsClient.h_ping / 1000.0)), "timeout")
+#		yield (get_tree().create_timer((WsClient.h_ping / 1000.0)), "timeout")
 		player.spawn_self()
 
 func _init_conts(player_obj):
@@ -173,16 +208,24 @@ func get_player(search_id):
 	var return_player = null
 	for player in players:
 		if (str(player.id) == str(search_id)):
-			return_player = player
+			return_player = player	
 	return return_player
 
-remotesync func init_net_player(id, echo = false):
-	var other_plr = player_obj.instance()
-	base_player_init(other_plr, 1, id)
-	other_plr.type = 1
-	other_plr.id = id
+var inited_players = []
+remotesync func init_net_player(id, username, echo = false):
+	if (id != client_player.id and not inited_players.has(id)):
+		inited_players.append(id)
+		var other_plr = player_obj.instance()
+		base_player_init(other_plr, 1, id)
+		other_plr.username = username
+		other_plr.type = 1
+		other_plr.id = id
 	
-	if (not echo): rpc_id(id, "init_net_player", Network.id, true)
+	if (not echo): rpc_id(id, "init_net_player", Network.id, Network.username, true)
+
+func _player_leave(id):
+	print("Bye bye (%s)" % id)
+	get_player(id).queue_free()
 
 #func _ws_data(type, args):
 #
@@ -250,6 +293,11 @@ func _process(delta):
 	if (cam != null):
 		for hud_elem in get_tree().get_nodes_in_group("HUD"):
 			hud_elem.position = cam.get_camera_screen_center() + Vector2(80, 360)
+	
+	root.material.set_shader_param("MOOD_COLOR", GlobalVars.mood_color)
+	root.background_node.color = GlobalVars.mood_color
+	
+	root.get_node("Crosshair").position = root.get_global_mouse_position()
 
 func _physics_process(delta):
 	var loopnodes = get_tree().get_nodes_in_group("Looping")

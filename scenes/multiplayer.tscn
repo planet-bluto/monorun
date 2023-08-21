@@ -2,7 +2,7 @@
 
 [ext_resource path="res://misc/DEFAULT FONT.tres" type="DynamicFont" id=1]
 [ext_resource path="res://sprites/multiplayer_layout.png" type="Texture" id=2]
-[ext_resource path="res://sprites/crosshair.png" type="Texture" id=3]
+[ext_resource path="res://objects/Crosshair.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scripts/scene_multiplayer.gd" type="Script" id=4]
 [ext_resource path="res://misc/DEFAULT_THEME.tres" type="Theme" id=5]
 [ext_resource path="res://misc/tile_shader.tres" type="Shader" id=6]
@@ -40,6 +40,7 @@ current = true
 zoom = Vector2( 5, 5 )
 
 [node name="LobbyList" type="Control" parent="."]
+visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 
@@ -61,10 +62,11 @@ margin_right = 780.0
 margin_bottom = 87.0
 theme = ExtResource( 5 )
 context_menu_enabled = false
-placeholder_text = "Query..."
+placeholder_text = "Enter Address or Search"
 caret_blink = true
 
 [node name="AddButton" type="Button" parent="LobbyList"]
+modulate = Color( 0.27451, 0.776471, 0.0941176, 1 )
 margin_left = 10.0
 margin_top = 45.0
 margin_right = 55.0
@@ -96,7 +98,6 @@ custom_fonts/font = ExtResource( 1 )
 icon = ExtResource( 7 )
 
 [node name="PlayerInfo" type="Control" parent="."]
-visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 
@@ -120,11 +121,9 @@ margin_bottom = 346.0
 custom_fonts/font = ExtResource( 1 )
 text = "You need a nickname to join a lobby"
 
-[node name="Crosshair" type="Sprite" parent="."]
-texture = ExtResource( 3 )
+[node name="Crosshair" parent="." instance=ExtResource( 3 )]
 
 [node name="LoadingScreen" type="Control" parent="."]
-visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 

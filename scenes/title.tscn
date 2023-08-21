@@ -5,7 +5,7 @@
 [ext_resource path="res://misc/template_tileset.tres" type="TileSet" id=3]
 [ext_resource path="res://scripts/scene_title.gd" type="Script" id=4]
 [ext_resource path="res://misc/font_shortstack.tres" type="DynamicFont" id=5]
-[ext_resource path="res://sprites/crosshair.png" type="Texture" id=6]
+[ext_resource path="res://objects/Crosshair.tscn" type="PackedScene" id=6]
 [ext_resource path="res://misc/player_shader.tres" type="Shader" id=7]
 [ext_resource path="res://misc/tile_shader.tres" type="Shader" id=8]
 [ext_resource path="res://music/title.wav" type="AudioStream" id=9]
@@ -104,7 +104,6 @@ tracks/0/keys = {
 [node name="Node2D" type="Node2D"]
 material = SubResource( 3 )
 script = ExtResource( 4 )
-COLOR = Color( 0.00784314, 0.290196, 0.792157, 1 )
 
 [node name="Background" type="ColorRect" parent="."]
 margin_left = -640.0
@@ -116,6 +115,7 @@ color = Color( 0, 0, 0, 1 )
 material = SubResource( 4 )
 tile_set = ExtResource( 3 )
 cell_size = Vector2( 80, 80 )
+collision_layer = 9
 format = 1
 tile_data = PoolIntArray( -589801, 5, 0, -589798, 7, 0, -589793, 5, 0, -589790, 7, 0, -524265, 5, 0, -524262, 7, 0, -524257, 5, 0, -524254, 7, 0, -458729, 5, 0, -458726, 7, 0, -458721, 5, 0, -458718, 7, 0, -393193, 10, 0, -393192, 11, 0, -393191, 11, 0, -393190, 12, 0, -393185, 10, 0, -393184, 11, 0, -393183, 11, 0, -393182, 12, 0, -327619, 13, 0, -327618, 13, 0, -327617, 13, 0, -327616, 13, 0, -327615, 13, 0, -65544, 1, 0, -65543, 1, 0, -65542, 1, 0, -65541, 1, 0, -65540, 1, 0, -65539, 1, 0, -65538, 1, 0, -65537, 1, 0, -131072, 1, 0, -131071, 1, 0, -131070, 1, 0, -131069, 1, 0, -131068, 1, 0, -131067, 1, 0, -131066, 1, 0, -131065, 1, 0, -131064, 1, 0, -131063, 1, 0, -131062, 1, 0, -131061, 1, 0, -131060, 1, 0, -131059, 1, 0, -131058, 1, 0, -131057, 1, 0, -131056, 1, 0, -131055, 1, 0, -131054, 1, 0, -131053, 1, 0, -131052, 1, 0, -131051, 1, 0, -131050, 1, 0, -131049, 1, 0, -131048, 1, 0, -131047, 1, 0, -131046, 1, 0, -131045, 1, 0, -131044, 1, 0, -131043, 1, 0, -131042, 1, 0, -131041, 1, 0, -131040, 1, 0, -131039, 1, 0, -131038, 1, 0, -131037, 1, 0, -131036, 1, 0, -131035, 1, 0, -131034, 1, 0, -131033, 1, 0, -131032, 1, 0, -131031, 1, 0, -131030, 1, 0, -131029, 1, 0, -131028, 1, 0, -131027, 1, 0, -131026, 1, 0, -131025, 1, 0, -131024, 1, 0, -131023, 1, 0, -131022, 1, 0, -131021, 1, 0, -131020, 1, 0, -131019, 1, 0, -131018, 1, 0, -131017, 1, 0, -131016, 1, 0, -131015, 1, 0, -131014, 1, 0, -131013, 1, 0, -131012, 1, 0, -131011, 1, 0, -131010, 1, 0, -131009, 1, 0, -131008, 1, 0, -131007, 1, 0, -131006, 1, 0, -131005, 1, 0, -131004, 1, 0, -131003, 1, 0, -131002, 1, 0, -131001, 1, 0, -131000, 1, 0, -130999, 1, 0, -130998, 1, 0, -130997, 1, 0, -130996, 1, 0, -130995, 1, 0 )
 
@@ -139,7 +139,6 @@ offset = Vector2( 2.5, 0 )
 use_parent_material = true
 position = Vector2( 0, 195 )
 type = 3
-COLOR = Color( 0.878431, 0.235294, 0.156863, 1 )
 
 [node name="Local" type="Button" parent="Camera"]
 margin_left = -345.0
@@ -208,7 +207,7 @@ margin_top = 310.0
 margin_right = 630.0
 margin_bottom = 350.0
 custom_fonts/font = ExtResource( 5 )
-text = "V.ALPHA1"
+text = "V.ALPHA4.2"
 align = 2
 
 [node name="Anim" type="AnimationPlayer" parent="Camera"]
@@ -218,8 +217,7 @@ anims/Online = SubResource( 7 )
 anims/Options = SubResource( 8 )
 anims/RESET = SubResource( 9 )
 
-[node name="Crosshair" type="Sprite" parent="."]
-texture = ExtResource( 6 )
+[node name="Crosshair" parent="." instance=ExtResource( 6 )]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 9 )

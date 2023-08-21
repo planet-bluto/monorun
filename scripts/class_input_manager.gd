@@ -25,6 +25,17 @@ var keys = {
 	"ALT":false
 }
 
+var timers = {
+	"U":0, 
+	"D":0, 
+	"L":0, 
+	"R":0, 
+	"DASH":0, 
+	"JUMP":0, 
+	"SHOOT":0, 
+	"ALT":0
+}
+
 func _init(t, id):
 	type = t
 	GlobalInputManager.managers[id] = self
@@ -34,12 +45,15 @@ func _init(t, id):
 
 func _update(_delta):
 	if (type == 0):
-
+		
 		for key in keys:
+			if (Input.is_action_pressed(key)):
+				timers[key] += 1
 			if (Input.is_action_just_pressed(key)):
 				_handle_press(key)
 			if (Input.is_action_just_released(key)):
 				_handle_release(key)
+				timers[key] = 0
 
 func is_down(key):
 	return keys[key]
@@ -55,7 +69,6 @@ func decode(string):
 	elif (bol == "2"):
 
 		_handle_release(ind)
-
 
 func _handle_press(key):
 	if (type == 0):
@@ -80,8 +93,7 @@ func _on_released(key):
 	pass
 
 func _on_input(key, state):
-	if (WsClient.connected and type == 0):
-		var sock_string = "i:" + str(key) + str(state) + ",%s" % MonoBase.fromDec(Date.now())
+	pass
 
 
 func get_tree():

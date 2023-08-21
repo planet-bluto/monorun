@@ -2,6 +2,8 @@ extends Area2D
 
 export  var COLOR = Color("#e03c28")
 
+const w_id = 0
+
 var id = null
 var frame = 0
 var spawner = null
@@ -20,7 +22,12 @@ func _process(delta):
 		if (collider.is_in_group("Player") and not hit.has(collider)):
 			hit.append(collider)
 			if (collider != spawner):
-				collider.damage(60)
+				collider.damage(60, {
+					"attacker_username": spawner.username,
+					"attacker_color": spawner.COLOR.to_html(false),
+					"weapon_id": w_id,
+					"sd": false
+				})
 	
 	frame += 1
 
